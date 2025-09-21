@@ -1,7 +1,7 @@
-// ✅ Use your real project ID here
+// Your WalletConnect Cloud Project ID
 const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4";
 
-// Only Ethereum chains for now
+// Define only Ethereum mainnet (EVM chain)
 const chains = [
   {
     chainId: 1,
@@ -12,16 +12,18 @@ const chains = [
   }
 ];
 
-// ✅ Initialize Web3Modal correctly
+// Initialize modal
 const web3Modal = new window.Web3Modal.StandaloneWeb3Modal({
   projectId,
   themeMode: "light",
   chains
 });
 
+// DOM elements
 const connectBtn = document.getElementById("connectBtn");
 const addressEl = document.getElementById("address");
 
+// Connect wallet
 connectBtn.addEventListener("click", async () => {
   try {
     const provider = await web3Modal.connectWallet();
