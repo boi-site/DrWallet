@@ -1,32 +1,22 @@
-const { createAppKit } = window.AppKit;
-
 const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your real projectId
 
-// Create AppKit client
-const modal = createAppKit({
+// Setup WalletConnect EVM provider
+const provider = window.WalletConnectProviderEthereumProvider.default({
   projectId,
-  chains: [
-    { id: 1, name: "Ethereum" },
-    { id: 137, name: "Polygon" },
-    { id: 56, name: "Binance Smart Chain" },
-    { id: 10, name: "Optimism" },
-    { id: 42161, name: "Arbitrum" }
-  ],
-  themeMode: "dark"
+  chains: [1, 137, 56, 10, 42161], // Ethereum, Polygon, BSC, Optimism, Arbitrum
+  showQrModal: true
 });
 
-// Open modal when button is clicked
 document.getElementById("connectBtn").addEventListener("click", async () => {
   try {
-    const session = await modal.open();
-    console.log("Connected session:", session);
+    await provider.enable(); // triggers WalletConnect modal
+    const ethersProvider = new ethers.BrowserProvider(provider);
 
-    if (session.accounts && session.accounts.length > 0) {
-      const address = session.accounts[0].address;
-      const display = document.createElement("p");
-      display.textContent = "Connected address: " + address;
-      document.body.appendChild(display);
-    }
+    const signer = await ethersProvider.getSigner();
+    const address = await signer.getAddress();
+
+    document.getElementById("address").textContent = "Connected: " + address;
+    console.log("Connected address:", address);
   } catch (err) {
     console.error("Connection error:", err);
   }
