@@ -1,33 +1,31 @@
-const { WalletConnectModal } = window.WalletConnectModal;
+// Pull Web3Modal from global
+const { Web3Modal } = window;
 
-const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your actual project ID
+const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your project ID
 
-// Supported EVM chains
-const chains = [
-  "eip155:1",     // Ethereum
-  "eip155:137",   // Polygon
-  "eip155:56",    // Binance Smart Chain
-  "eip155:10",    // Optimism
-  "eip155:42161"  // Arbitrum
-];
-
-const modal = new WalletConnectModal({
+// Create Web3Modal instance (EVM only)
+const web3Modal = new Web3Modal({
   projectId,
-  chains,
-  themeMode: "dark"
+  standaloneChains: [
+    "eip155:1",     // Ethereum
+    "eip155:137",   // Polygon
+    "eip155:56",    // Binance Smart Chain
+    "eip155:42161", // Arbitrum
+    "eip155:10"     // Optimism
+  ]
 });
 
 let sessionData = null;
 
-// Connect button
+// Connect
 document.getElementById("connectBtn").addEventListener("click", async () => {
   try {
-    sessionData = await modal.openModal();
+    sessionData = await web3Modal.openModal();
 
     if (sessionData?.namespaces?.eip155) {
       const accounts = sessionData.namespaces.eip155.accounts;
       if (accounts.length > 0) {
-        const address = accounts[0].split(":")[2]; // format: eip155:1:0x...
+        const address = accounts[0].split(":")[2];
         document.getElementById("walletAddress").innerText = `Connected: ${address}`;
         document.getElementById("connectBtn").style.display = "none";
         document.getElementById("disconnectBtn").style.display = "inline-block";
@@ -38,7 +36,7 @@ document.getElementById("connectBtn").addEventListener("click", async () => {
   }
 });
 
-// Disconnect button
+// Disconnect
 document.getElementById("disconnectBtn").addEventListener("click", () => {
   sessionData = null;
   document.getElementById("walletAddress").innerText = "";
