@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WalletConnect Example</title>
-  <script src="https://unpkg.com/@walletconnect/appkit@latest/dist/index.umd.js"></script>
+  <title>WalletConnect EVM Example</title>
+  <script src="https://unpkg.com/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/ethereum-provider@2.9.0/dist/umd/index.min.js"></script>
 </head>
 <body>
-  <div style="display:flex;justify-content:center;align-items:center;height:100vh;">
+  <div style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;">
     <button id="connectBtn">Connect Wallet</button>
+    <p id="address"></p>
   </div>
 
   <script src="app.js"></script>
