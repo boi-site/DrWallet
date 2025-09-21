@@ -1,38 +1,32 @@
-// WalletConnect modal (EVM networks only)
-const { WalletConnectModal } = window.WalletConnectModal;
+const { createAppKit } = window.AppKit;
 
-const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your project ID
+const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your real projectId
 
-// EVM networks (Ethereum, Polygon, BSC, etc.)
-const chains = [
-  "eip155:1",     // Ethereum Mainnet
-  "eip155:137",   // Polygon
-  "eip155:56",    // Binance Smart Chain
-  "eip155:10",    // Optimism
-  "eip155:42161"  // Arbitrum
-];
-
-// Create modal instance
-const modal = new WalletConnectModal({
+// Create AppKit client
+const modal = createAppKit({
   projectId,
-  chains,
+  chains: [
+    { id: 1, name: "Ethereum" },
+    { id: 137, name: "Polygon" },
+    { id: 56, name: "Binance Smart Chain" },
+    { id: 10, name: "Optimism" },
+    { id: 42161, name: "Arbitrum" }
+  ],
   themeMode: "dark"
 });
 
-// Connect button
+// Open modal when button is clicked
 document.getElementById("connectBtn").addEventListener("click", async () => {
   try {
-    const session = await modal.openModal();
-
-    // Get first connected account address
-    const address = session.namespaces.eip155.accounts[0].split(":")[2];
-
-    // Show on page
-    const display = document.createElement("p");
-    display.textContent = "Connected address: " + address;
-    document.body.appendChild(display);
-
+    const session = await modal.open();
     console.log("Connected session:", session);
+
+    if (session.accounts && session.accounts.length > 0) {
+      const address = session.accounts[0].address;
+      const display = document.createElement("p");
+      display.textContent = "Connected address: " + address;
+      document.body.appendChild(display);
+    }
   } catch (err) {
     console.error("Connection error:", err);
   }
