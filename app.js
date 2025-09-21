@@ -1,23 +1,48 @@
-const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your real projectId
+const { WalletConnectModal } = window.WalletConnectModal;
 
-// Setup WalletConnect EVM provider
-const provider = window.WalletConnectProviderEthereumProvider.default({
+const projectId = "0a42f387122d69d01d7d8bbf50bbb4c4"; // your actual project ID
+
+// Supported EVM chains
+const chains = [
+  "eip155:1",     // Ethereum
+  "eip155:137",   // Polygon
+  "eip155:56",    // Binance Smart Chain
+  "eip155:10",    // Optimism
+  "eip155:42161"  // Arbitrum
+];
+
+const modal = new WalletConnectModal({
   projectId,
-  chains: [1, 137, 56, 10, 42161], // Ethereum, Polygon, BSC, Optimism, Arbitrum
-  showQrModal: true
+  chains,
+  themeMode: "dark"
 });
 
+let sessionData = null;
+
+// Connect button
 document.getElementById("connectBtn").addEventListener("click", async () => {
   try {
-    await provider.enable(); // triggers WalletConnect modal
-    const ethersProvider = new ethers.BrowserProvider(provider);
+    sessionData = await modal.openModal();
 
-    const signer = await ethersProvider.getSigner();
-    const address = await signer.getAddress();
-
-    document.getElementById("address").textContent = "Connected: " + address;
-    console.log("Connected address:", address);
+    if (sessionData?.namespaces?.eip155) {
+      const accounts = sessionData.namespaces.eip155.accounts;
+      if (accounts.length > 0) {
+        const address = accounts[0].split(":")[2]; // format: eip155:1:0x...
+        document.getElementById("walletAddress").innerText = `Connected: ${address}`;
+        document.getElementById("connectBtn").style.display = "none";
+        document.getElementById("disconnectBtn").style.display = "inline-block";
+      }
+    }
   } catch (err) {
     console.error("Connection error:", err);
   }
+});
+
+// Disconnect button
+document.getElementById("disconnectBtn").addEventListener("click", () => {
+  sessionData = null;
+  document.getElementById("walletAddress").innerText = "";
+  document.getElementById("connectBtn").style.display = "inline-block";
+  document.getElementById("disconnectBtn").style.display = "none";
+  console.log("Disconnected");
 });
